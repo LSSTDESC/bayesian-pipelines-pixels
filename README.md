@@ -15,10 +15,24 @@ See the [Project Roadmap](https://github.com/LSSTDESC/bayesian-pipelines-pixels/
 - [JIF](https://github.com/mdschneider/JIF)
 - [MADNESS](https://portal.lsstdesc.org/DESCPub/app/PB/show_project?pid=251)
 
-## Install Dependencies
+## Install
 
-From `pyproject.toml` file
+1. First setup a virtual environment and activate it.
 
-```bash
-python -m pip install .
-```
+    ```bash
+    python3 -m venv venv
+    source venv/bin/activate
+    ```
+
+2. Install `flit` (python package manager) with pip.
+
+    ```bash
+    python3 -m pip install --upgrade pip # latest pip
+    python3 -m pip install flit
+    ```
+
+3. Install package (editable) and dependencies.
+
+    ```bash
+    flit install -s --deps all
+    ```
