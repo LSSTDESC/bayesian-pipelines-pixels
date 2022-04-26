@@ -1,23 +1,16 @@
-# bayesian-pipelines
-Bayesian cosmological inference directly from pixels. 
+# bayesian-pipelines-pixels
+Bayesian inference of lensing shear directly from pixels. 
 
-## Pipeline stages 
+This project aims to demonstrate probabilistic analysis of simulated Rubin single-visit and coadd images to infer posterior weak lensing shear and convergence fields on the sky. The modeling will be tested on both forward simulated data and LSST DESC Data Challenge 2 (DC2) images.
 
-There are multiple stages in an inference pipeline to constrain cosmological parameters from Rubin images. For some stages, there exist multiple methods in development for Bayesian inference. Other stages, do not yet have Bayesian models implemented and ready for exploration within DESC. Our goal is to implement and demonstrate Bayesian pipelines for a subset of the possible stages listed below, to begin to establish performance metrics for the Bayesian pipeline approach.
+We are building a Bayesian pipeline for weak lensing shear and convergence inference combining multiple existing DESC tools/projects. Our pipeline includes a generative model for galaxy images that is used for inference as well as training and validation of specific inference algorithms. The generative model starts from a fixed cosmology and redshift distribution, uses two-dimensional random (Gaussian or log-Normal) fields to build a correlated shear field, and uses `galsim` to draw and shear galaxies. The inference pipeline will consist of detection, deblending, shape inference, and shear inference stages. 
 
-1. PSF measurement and interpolation
-2. Galaxy image analysis
-3. Shear inference
-4. Photo-z inference
-5. LSS inference
-6. Cosmological parameter inference
+See the [Project Roadmap](https://github.com/LSSTDESC/bayesian-pipelines-pixels/issues/1) for details about the structure of the generative model and inference pipeline.
 
-## Generative model (v1)
+## Existing codes being interfaced here:
 
-1. Log-normal model of density and lensing convergence with a cosmology-dependent power spectrum
-2. Redshifts asserted (no photo-z)
-3. Lensing shear and convergence given as inputs to image simulations
-4. Isolated (non-blended) galaxy images rendered in postage stamps using GalSim (and/or Lanusse differentiable implementation thereof)
-5. Constant PSF, Sersic galaxy profiles, artificially small shape noise
+- [BLISS](https://github.com/prob-ml/bliss)
+- [BFD](https://github.com/rearmstr/desc_bfd)
+- [JIF](https://github.com/mdschneider/JIF)
+- [MADNESS](https://portal.lsstdesc.org/DESCPub/app/PB/show_project?pid=251)
 
-This model will test Bayesian pipeline stages for: galaxy image analysis, shear inference, and cosmological parameter inference.
