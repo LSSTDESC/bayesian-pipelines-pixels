@@ -1,0 +1,41 @@
+[project]
+authors = [
+  {name = "Ismael Mendoza", email = "imendoza@umich.edu"},
+  {name = "Michael Schneider"},
+  {name = "Bob Armstrong"},
+  {name = "Biswajit Biswas"},
+  {name = "Francois Lanusse"},
+]
+classifiers = [
+  "License :: OSI Approved :: MIT License",
+]
+dependencies = ["galsim>=2.3.4", "numpy>=1.22.0"]
+dynamic = ["version", "description"]
+keywords = ["bayesian", "shear", "inference", "lsst"]
+license = "./LICENSE"
+name = "bayes_pipelines_pixels"
+readme = "README.md"
+requires-python = ">=3.7"
+
+[project.optional-dependencies]
+test = ["pytest >=7.1.2"]
+
+[project.urls]
+Home = "https://github.com/LSSTDESC/bayesian-pipelines-pixels"
+
+[tool.flit.sdist]
+include = ["bpp/"]
+
+[tool.flit.module]
+name = "bpp"
+
+[build-system]
+build-backend = "flit_core.buildapi"
+requires = ["flit_core >=3.2,<4"]
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+minversion = "7.0.0"
+testpaths = [
+  "tests",
+]
