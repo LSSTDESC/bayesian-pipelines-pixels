@@ -22,11 +22,10 @@ def get_bulge_disk_galaxy(flux: float, fluxnorm_d: float,
 
     Returns:
         Galsim Object consisting of a Bulge and Disk component.
-
     """
     flux_d = flux * fluxnorm_d
     flux_b = flux * (1 - fluxnorm_d)
-    beta_radians = beta * galsim.radians
+    beta_radians = beta * galsim.radians  # same for both bulge+disk.
 
     if flux_d + flux_b == 0:
         raise ValueError("Source not visible")
@@ -42,11 +41,9 @@ def get_bulge_disk_galaxy(flux: float, fluxnorm_d: float,
 
     if flux_b > 0:
         bulge_hlr = np.sqrt(a_b * b_b)
-        disk_q = b_d / a_d
-        disk = galsim.Exponential(flux=flux_d, half_light_radius=disk_hlr)
-        disk = disk.shear(q=disk_q, beta=beta_radians)
+        bulge_q = b_b / a_b
         bulge = galsim.DeVaucouleurs(flux=flux_b, half_light_radius=bulge_hlr)
-        bulge = bulge.shear(q=disk_q, beta=beta_radians)
+        bulge = bulge.shear(q=bulge_q, beta=beta_radians)
         components.add(bulge)
 
     return galsim.add(components)
