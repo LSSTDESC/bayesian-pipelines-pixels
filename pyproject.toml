@@ -12,12 +12,13 @@ classifiers = [
 dependencies = ["galsim>=2.3.4", "numpy>=1.22.0"]
 dynamic = ["version", "description"]
 keywords = ["bayesian", "shear", "inference", "lsst"]
-license = "./LICENSE"
+license = {file = "LICENSE"}
 name = "bayes_pipelines_pixels"
 readme = "README.md"
 requires-python = ">=3.7"
 
 [project.optional-dependencies]
+dev = ["ipython>=8.3.0", "autopep8>=1.6.0", "flake8>=4.0.1"]
 test = ["pytest >=7.1.2"]
 
 [project.urls]
