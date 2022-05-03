@@ -9,7 +9,7 @@ authors = [
 classifiers = [
   "License :: OSI Approved :: MIT License",
 ]
-dependencies = ["galsim>=2.3.4", "numpy>=1.22.0"]
+dependencies = ["galsim>=2.3.4", "numpy>=1.22.0", "astropy>=5.0.4"]
 dynamic = ["version", "description"]
 keywords = ["bayesian", "shear", "inference", "lsst"]
 license = {file = "LICENSE"}
