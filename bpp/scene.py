@@ -1,4 +1,3 @@
-from multiprocessing.sharedctypes import Value
 from astropy.table import Table
 import galsim
 import numpy as np
