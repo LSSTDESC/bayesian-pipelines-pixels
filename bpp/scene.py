@@ -49,6 +49,6 @@ def create_scene(slen: float, catalog: Table, psf: galsim.GSObject,
     gals.shear(g1=g1, g2=g2)
     image = gals.drawImage(nx=slen, ny=slen, scale=pixel_scale)
     generator = galsim.random.BaseDeviate(seed=seed)
-    noise = galsim.PoissonNoise(rng=generator, sky_level=sky_level)
+    noise = galsim.GaussianNoise(rng=generator, sigma=sky_level)
     image.addNoise(noise)
     return image.array
