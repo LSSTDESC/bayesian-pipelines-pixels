@@ -2,7 +2,7 @@ import numpy as np
 from astropy.table import Table
 
 
-def create_uniform_catalog(n_rows: int = 1, max_shift: float = 10.0,
+def create_uniform_catalog(n_rows: int = 1, max_shift: float = 4.0,
                            min_a: float = 0.7, max_a: float = 5.0):
     """Creates a galaxy catalog with uniform parameters.
 
@@ -24,8 +24,8 @@ def create_uniform_catalog(n_rows: int = 1, max_shift: float = 10.0,
     q_b = np.random.uniform(0, 1, size=n_rows)
     b_d = a_d * q_d
     b_b = a_b * q_b
-    ra = np.random.uniform(0, max_shift, size=n_rows)
-    dec = np.random.uniform(0, max_shift, size=n_rows)
+    ra = np.random.uniform(-max_shift, max_shift, size=n_rows)
+    dec = np.random.uniform(-max_shift, max_shift, size=n_rows)
     data = [flux, fluxnorm_d, beta, a_d, a_b, b_d, b_b, ra, dec]
     names = ['flux', 'fluxnorm_d', 'beta',
              'a_d', 'a_b', 'b_d', 'b_b', 'ra', 'dec']
