@@ -3,7 +3,8 @@ from astropy.table import Table
 
 
 def create_uniform_catalog(n_rows: int = 1, max_shift: float = 4.0,
-                           min_a: float = 0.7, max_a: float = 5.0):
+                           min_a: float = 0.7, max_a: float = 5.0,
+                           min_q: float = 0.5):
     """Creates a galaxy catalog with uniform parameters.
 
     Args:
@@ -20,8 +21,8 @@ def create_uniform_catalog(n_rows: int = 1, max_shift: float = 4.0,
     beta = np.random.uniform(0, 2 * np.pi, size=n_rows)
     a_d = np.random.uniform(min_a, max_a, size=n_rows)
     a_b = np.random.uniform(min_a, max_a, size=n_rows)
-    q_d = np.random.uniform(0, 1, size=n_rows)
-    q_b = np.random.uniform(0, 1, size=n_rows)
+    q_d = np.random.uniform(min_q, 1, size=n_rows)
+    q_b = np.random.uniform(min_q, 1, size=n_rows)
     b_d = a_d * q_d
     b_b = a_b * q_b
     ra = np.random.uniform(-max_shift, max_shift, size=n_rows)
