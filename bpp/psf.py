@@ -21,9 +21,10 @@ def get_optical_and_atmospheric_psf(
     Args:
         mirror_diameter: in meters [m]
         effective_area: effective total light collecting area [m2]
-        filter_wavelength: filter wavelength
-        fwhm: fwhm of the atmospheric component
-        atmospheric_model: type of atmospheric model
+        filter_wavelength: filter wavelength [Angstrom]
+        fwhm: fwhm of the atmospheric component [arcsecond]
+        atmospheric_model: type of atmospheric model. Options:
+            ['Kolmogorov', 'Moffat']
     Returns:
         psf_model: galsim psf model
     """
@@ -43,11 +44,11 @@ def get_optical_and_atmospheric_psf(
         mirror_area = np.pi * (0.5 * mirror_diameter) ** 2
         area_ratio = effective_area / mirror_area
         if area_ratio <= 0 or area_ratio > 1:
-            raise RuntimeError(
-                "Incompatible effective-area and mirror-diameter values.")
+            msg = "Incompatible effective-area and mirror-diameter values."
+            raise RuntimeError(msg)
         obscuration_fraction = np.sqrt(1 - area_ratio)
-        lambda_over_diameter = 3600 * \
-            np.degrees(1e-10 * filter_wavelength / mirror_diameter)
+        lambda_over_diameter = 1e-10 * filter_wavelength / mirror_diameter
+        lambda_over_diameter = 3600 * np.degrees(lambda_over_diameter)
         optical_psf = galsim.Airy(
             lam_over_diam=lambda_over_diameter,
             obscuration=obscuration_fraction

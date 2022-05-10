@@ -42,9 +42,8 @@ def create_scene(slen: float, catalog: Table, psf: galsim.GSObject,
     gals = None
     for row in catalog:
         flux = _convert_mag2flux(row['mag'])
-        fluxnorm_d = row['fluxnorm_d']
+        fluxnorm_d, beta = row['fluxnorm_d'], row['beta']
         a_d, b_d, a_b, b_b = row['a_d'], row['b_d'], row['b_b'], row['b_d']
-        beta = row['beta']
         galaxy = get_bulge_disk_galaxy(flux, fluxnorm_d,
                                        a_d, b_d, a_b, b_b, beta)
         gal_conv = galaxy.convolve(psf)
