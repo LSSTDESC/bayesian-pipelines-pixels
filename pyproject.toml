@@ -18,7 +18,7 @@ readme = "README.md"
 requires-python = ">=3.7"
 
 [project.optional-dependencies]
-dev = ["ipython>=8.3.0", "autopep8>=1.6.0", "flake8>=4.0.1"]
+dev = ["ipython>=8.3.0", "autopep8>=1.6.0", "flake8>=4.0.1", "jupyter>=1.0.0", "notebook>=6.4.11"]
 test = ["pytest >=7.1.2"]
 
 [project.urls]
