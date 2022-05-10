@@ -15,7 +15,7 @@ def create_uniform_catalog(n_rows: int = 1, max_shift: float = 4.0,
     Returns:
         Astropy table with rows corresponding to a single galaxy.
     """
-    flux = np.random.uniform(1e3, 1e6, size=n_rows)
+    flux = 10**np.random.uniform(3, 6, size=n_rows)
     fluxnorm_d = np.random.uniform(size=n_rows)
     beta = np.random.uniform(0, 2 * np.pi, size=n_rows)
     a_d = np.random.uniform(min_a, max_a, size=n_rows)
