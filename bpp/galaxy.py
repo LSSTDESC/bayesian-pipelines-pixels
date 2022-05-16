@@ -44,6 +44,6 @@ def get_bulge_disk_galaxy(flux: float, fluxnorm_d: float,
         bulge_q = b_b / a_b
         bulge = galsim.DeVaucouleurs(flux=flux_b, half_light_radius=bulge_hlr)
         bulge = bulge.shear(q=bulge_q, beta=beta_radians)
-        components.add(bulge)
+        components.append(bulge)
 
-    return galsim.add(components)
+    return galsim.Add(components)
