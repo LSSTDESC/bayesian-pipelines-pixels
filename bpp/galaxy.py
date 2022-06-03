@@ -2,9 +2,15 @@ import galsim
 import numpy as np
 
 
-def get_bulge_disk_galaxy(flux: float, fluxnorm_d: float,
-                          a_d: float, b_d: float, a_b: float, b_b: float,
-                          beta: float) -> galsim.GSObject:
+def get_bulge_disk_galaxy(
+    flux: float,
+    fluxnorm_d: float,
+    a_d: float,
+    b_d: float,
+    a_b: float,
+    b_b: float,
+    beta: float,
+) -> galsim.GSObject:
     """Returns a Galsim model of a combined Bulge+Disk Galaxy.
 
     Both the bulge and disk component are assume to have the same orientation

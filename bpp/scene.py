@@ -1,24 +1,29 @@
-from astropy.table import Table
 import galsim
 import numpy as np
+from astropy.table import Table
 
 from bpp.galaxy import get_bulge_disk_galaxy
 
 
 def _validate_catalog(catalog: Table):
     """Ensure table is valid and has correct column names."""
-    required = {'flux', 'fluxnorm_d', 'a_d', 'a_b', 'b_b',
-                'b_d', 'beta', 'ra', 'dec'}
+    required = {"flux", "fluxnorm_d", "a_d", "a_b", "b_b", "b_d", "beta", "ra", "dec"}
     if not required.issubset(set(catalog.colnames)):
         raise ValueError(f"Catalog does not have required columns: {required}")
     if not len(catalog) > 0:
         raise ValueError("Table has no row.")
 
 
-def create_scene(slen: float, catalog: Table, psf: galsim.GSObject,
-                 pixel_scale: float = 0.2,
-                 g1: float = None, g2: float = None,
-                 sky_level: float = 0, seed: int = 0) -> np.ndarray:
+def create_scene(
+    slen: float,
+    catalog: Table,
+    psf: galsim.GSObject,
+    pixel_scale: float = 0.2,
+    g1: float = None,
+    g2: float = None,
+    sky_level: float = 0,
+    seed: int = 0,
+) -> np.ndarray:
     """Create a scene of galaxies as desired positions specified in `catalog`.
 
     Args:
@@ -37,10 +42,9 @@ def create_scene(slen: float, catalog: Table, psf: galsim.GSObject,
     _validate_catalog(catalog)
     gals = None
     for row in catalog:
-        flux, fluxnorm_d, beta = row['flux'], row['fluxnorm_d'], row['beta']
-        a_d, b_d, a_b, b_b = row['a_d'], row['b_d'], row['a_b'], row['b_b']
-        galaxy = get_bulge_disk_galaxy(flux, fluxnorm_d,
-                                       a_d, b_d, a_b, b_b, beta)
+        flux, fluxnorm_d, beta = row["flux"], row["fluxnorm_d"], row["beta"]
+        a_d, b_d, a_b, b_b = row["a_d"], row["b_d"], row["a_b"], row["b_b"]
+        galaxy = get_bulge_disk_galaxy(flux, fluxnorm_d, a_d, b_d, a_b, b_b, beta)
         gal_conv = galsim.Convolve(galaxy, psf)
         gal_conv = gal_conv.shift(row["ra"], row["dec"])
         if gals is None:

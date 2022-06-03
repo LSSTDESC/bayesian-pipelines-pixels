@@ -50,8 +50,7 @@ def get_optical_and_atmospheric_psf(
         lambda_over_diameter = 1e-10 * filter_wavelength / mirror_diameter
         lambda_over_diameter = 3600 * np.degrees(lambda_over_diameter)
         optical_psf = galsim.Airy(
-            lam_over_diam=lambda_over_diameter,
-            obscuration=obscuration_fraction
+            lam_over_diam=lambda_over_diameter, obscuration=obscuration_fraction
         )
 
     # define the psf model according to the components we have
