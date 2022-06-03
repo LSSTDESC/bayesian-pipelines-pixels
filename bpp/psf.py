@@ -3,6 +3,7 @@ import numpy as np
 
 
 def get_gaussian_psf(fwhm: float) -> galsim.GSObject:
+    """Return a Gaussian PSF model specified with FWHM."""
     return galsim.Gaussian(fwhm=fwhm, flux=1.0)
 
 
@@ -50,8 +51,7 @@ def get_optical_and_atmospheric_psf(
         lambda_over_diameter = 1e-10 * filter_wavelength / mirror_diameter
         lambda_over_diameter = 3600 * np.degrees(lambda_over_diameter)
         optical_psf = galsim.Airy(
-            lam_over_diam=lambda_over_diameter,
-            obscuration=obscuration_fraction
+            lam_over_diam=lambda_over_diameter, obscuration=obscuration_fraction
         )
 
     # define the psf model according to the components we have
@@ -65,4 +65,4 @@ def get_optical_and_atmospheric_psf(
         psf = optical_psf
     else:
         raise RuntimeError("Neither component is defined.")
-    return psf.withFlux(1.0)
+    return psf.withFlux(1.0)  # pylint: disable=no-value-for-parameter
