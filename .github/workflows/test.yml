@@ -45,6 +45,10 @@ jobs:
         run: |
           pylint bpp/
 
+      - name: Run isort
+        run: |
+          isort bpp/ --check-only
+
       - name: Run Tests
         run: |
           pytest --durations=0
