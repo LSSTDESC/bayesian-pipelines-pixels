@@ -13,7 +13,7 @@ def validate_catalog(catalog: Table):
 
 def create_uniform_catalog(
     n_rows: int = 1,
-    max_shift: float = 4.0,
+    max_shift: float = 1.0,
     min_a: float = 0.7,
     max_a: float = 5.0,
     min_q: float = 0.5,
@@ -33,7 +33,7 @@ def create_uniform_catalog(
         Astropy table with rows corresponding to a single galaxy.
     """
     assert n_sersic_bins <= 100, "See Galsim documentation on Sersics."
-    assert max_shift / 0.2 <= 10, "Limit to single uncentered galaxies on a cutout."
+    assert max_shift / 0.2 <= 5, "Limit to single uncentered galaxies on a cutout."
     n_bins = np.linspace(1, 4, n_sersic_bins)  # galsim does not like continuous index.
     n = np.random.choice(n_bins, size=n_rows, replace=True)
     flux = 10 ** np.random.uniform(3, 6, size=n_rows)
