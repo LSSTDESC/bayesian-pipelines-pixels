@@ -17,22 +17,25 @@ See the [Project Roadmap](https://github.com/LSSTDESC/bayesian-pipelines-pixels/
 
 ## Install
 
-1. First setup a virtual environment and activate it.
+1. Install [poetry](https://python-poetry.org/docs/), our package manager.
 
+2. Git clone the repository
     ```bash
-    python3 -m venv venv
-    source venv/bin/activate
+    git clone https://github.com/LSSTDESC/bayesian-pipelines-pixels
     ```
 
-2. Install `flit` (python package manager) with pip.
-
+3. Install dependencies with poetry. (Don't forget to run it if `poetry.lock` file gets modified)
     ```bash
-    python3 -m pip install --upgrade pip # latest pip
-    python3 -m pip install flit
+    cd bayesian-pipelines-pixels
+    poetry install
     ```
 
-3. Install package (editable) and dependencies.
-
+4. Launch virtual environment (anytime you work on the project)
     ```bash
-    flit install -s --deps all
+    poetry shell
+    ```
+
+5. Package is now editable and importable within this virtual environment.
+    ```python
+    import bpp
     ```

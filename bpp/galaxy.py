@@ -17,7 +17,8 @@ def get_gaussian_galaxy_from_catalog(row: Row) -> galsim.GSObject:
     # NOTE: We take the HLR to be one from the disk component in catalog.
     flux = row["flux"].item()
     hlr = np.sqrt(row["a_d"] * row["b_d"]).item()
-    q, beta = row["q"].item(), row["beta"].item()
+    q = row["b_d"].item() / row["a_d"].item()
+    beta = row["beta"].item()
     return get_gaussian_galaxy(flux, hlr, q, beta)
 
 
@@ -36,7 +37,8 @@ def get_sersic_galaxy_from_catalog(row: Row) -> galsim.GSObject:
     flux = row["flux"].item()
     hlr = np.sqrt(row["a_d"] * row["b_d"]).item()
     n = row["n"]
-    q, beta = row["q"].item(), row["beta"].item()
+    q = row["b_d"].item() / row["a_d"].item()
+    beta = row["beta"].item()
     return get_sersic_galaxy(n, flux, hlr, q, beta)
 
 

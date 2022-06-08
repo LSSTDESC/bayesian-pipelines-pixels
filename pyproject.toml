@@ -1,47 +1,47 @@
-[project]
+[tool.poetry]
 authors = [
-  {name = "Ismael Mendoza", email = "imendoza@umich.edu"},
-  {name = "Michael Schneider"},
-  {name = "Bob Armstrong"},
-  {name = "Biswajit Biswas"},
-  {name = "Francois Lanusse"},
+  "Ismael Mendoza",
+  "Michael Schneider",
+  "Bob Armstrong",
+  "Biswajit Biswas",
+  "Axel Guinot",
+  "Francois Lanusse",
 ]
 classifiers = [
   "License :: OSI Approved :: MIT License",
 ]
-dependencies = ["galsim>=2.3.4", "numpy>=1.22.0", "astropy>=5.0.4"]
-dynamic = ["version", "description"]
+description = "Bayesian inference of lensing shear directly from pixels."
 keywords = ["bayesian", "shear", "inference", "lsst"]
-license = {file = "LICENSE"}
+license = "MIT"
 name = "bayes_pipelines_pixels"
+packages = [{include = "bpp"}]
 readme = "README.md"
-requires-python = ">=3.8"
+version = "0.0.1"
 
-[project.optional-dependencies]
-dev = [
-  "ipython>=8.3.0",
-  "black>=22.3.0",
-  "flake8>=4.0.1",
-  "jupyter>=1.0.0",
-  "notebook>=6.4.11",
-  "matplotlib>=3.5.2",
-  "isort >= 5.10.1",
-  "pylint>=2.14.0",
-]
-test = ["pytest >=7.1.2"]
+[tool.poetry.dependencies]
+astropy = ">=5.0.4"
+galsim = ">=2.3.4"
+numpy = ">=1.22.0"
+python = ">=3.8,<4.0"
 
-[project.urls]
+[tool.poetry.dev-dependencies]
+black = ">=22.3.0"
+flake8 = ">=4.0.1"
+ipython = ">=8.3.0"
+isort = ">=5.10.1"
+jupyter = ">=1.0.0"
+matplotlib = ">=3.5.2"
+notebook = ">=6.4.11"
+pylint = ">=2.14.0"
+pytest = ">=7.1.2"
+
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/LSSTDESC/bayesian-pipelines-pixels/issues"
 Home = "https://github.com/LSSTDESC/bayesian-pipelines-pixels"
 
-[tool.flit.sdist]
-include = ["bpp/"]
-
-[tool.flit.module]
-name = "bpp"
-
 [build-system]
-build-backend = "flit_core.buildapi"
-requires = ["flit_core >=3.2,<4"]
+build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.0.0"]
 
 [tool.pytest.ini_options]
 addopts = "-ra"
