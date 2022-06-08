@@ -26,6 +26,7 @@ See the [Project Roadmap](https://github.com/LSSTDESC/bayesian-pipelines-pixels/
 
 3. Install dependencies with poetry. (Don't forget to run it if `poetry.lock` file gets modified)
     ```bash
+    cd bayesian-pipelines-pixels
     poetry install
     ```
 
@@ -34,7 +35,7 @@ See the [Project Roadmap](https://github.com/LSSTDESC/bayesian-pipelines-pixels/
     poetry shell
     ```
 
-5. Package is editable and importable within this virtual environment.
+5. Package is now editable and importable within this virtual environment.
     ```python
     import bpp
     ```
