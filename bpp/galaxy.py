@@ -3,9 +3,13 @@ import numpy as np
 from astropy.table.row import Row
 
 
-def get_gaussian_galaxy(flux: float, hlr: float) -> galsim.GSObject:
+def get_gaussian_galaxy(
+    flux: float, hlr: float, q: float, beta: float
+) -> galsim.GSObject:
     """Returns a single Gaussian galaxy galsim object."""
-    return galsim.Gaussian(flux=flux, half_light_radius=hlr)
+    beta_radians = beta * galsim.radians
+    circular_gal = galsim.Gaussian(flux=flux, half_light_radius=hlr)
+    return circular_gal.shear(q=q, beta=beta_radians)
 
 
 def get_gaussian_galaxy_from_catalog(row: Row) -> galsim.GSObject:
@@ -13,12 +17,17 @@ def get_gaussian_galaxy_from_catalog(row: Row) -> galsim.GSObject:
     # NOTE: We take the HLR to be one from the disk component in catalog.
     flux = row["flux"].item()
     hlr = np.sqrt(row["a_d"] * row["b_d"]).item()
-    return get_gaussian_galaxy(flux, hlr)
+    q, beta = row["q"].item(), row["beta"].item()
+    return get_gaussian_galaxy(flux, hlr, q, beta)
 
 
-def get_sersic_galaxy(n: float, flux: float, hlr: float) -> galsim.GSObject:
+def get_sersic_galaxy(
+    n: float, flux: float, hlr: float, q: float, beta: float
+) -> galsim.GSObject:
     """Returns a single Sersic galaxy galsim object."""
-    return galsim.Sersic(n=n, flux=flux, half_light_radius=hlr)
+    beta_radians = beta * galsim.radians
+    circular_gal = galsim.Sersic(n=n, flux=flux, half_light_radius=hlr)
+    return circular_gal.shear(q=q, beta=beta_radians)
 
 
 def get_sersic_galaxy_from_catalog(row: Row) -> galsim.GSObject:
@@ -27,7 +36,8 @@ def get_sersic_galaxy_from_catalog(row: Row) -> galsim.GSObject:
     flux = row["flux"].item()
     hlr = np.sqrt(row["a_d"] * row["b_d"]).item()
     n = row["n"]
-    return get_sersic_galaxy(n, flux, hlr)
+    q, beta = row["q"].item(), row["beta"].item()
+    return get_sersic_galaxy(n, flux, hlr, q, beta)
 
 
 def get_bulge_disk_galaxy(
