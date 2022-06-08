@@ -18,6 +18,9 @@ jobs:
       - name: Checkout github repo
         uses: actions/checkout@v2
 
+      - name: Install poetry
+        run: pipx install poetry
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v3
         with:
@@ -27,12 +30,6 @@ jobs:
       - name: Install fftw3 (for galsim)
         run: |
           sudo apt-get install libfftw3-dev
-
-      - name: Install Poetry
-        run: |
-          pip install --upgrade pip
-          pip install "poetry-core>=1.0.0"
-          pip install "poetry>=1.1.13"
 
       - name: Install dependencies with poetry
         run: |
