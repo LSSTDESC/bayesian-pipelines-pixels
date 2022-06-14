@@ -2,19 +2,11 @@ import galsim
 import numpy as np
 from astropy.table import Table
 
-from bpp.galaxy import get_bulge_disk_galaxy
+from bpp.catalog import validate_catalog
+from bpp.galaxy import get_gaussian_galaxy_from_catalog
 
 
-def _validate_catalog(catalog: Table):
-    """Ensure table is valid and has correct column names."""
-    required = {"flux", "fluxnorm_d", "a_d", "a_b", "b_b", "b_d", "beta", "ra", "dec"}
-    if not required.issubset(set(catalog.colnames)):
-        raise ValueError(f"Catalog does not have required columns: {required}")
-    if not len(catalog) > 0:
-        raise ValueError("Table has no row.")
-
-
-def create_scene(
+def create_gaussian_scene(
     slen: float,
     catalog: Table,
     psf: galsim.GSObject,
@@ -39,12 +31,10 @@ def create_scene(
     Return:
         Numpy array containing an image with all galaxies of the catalog drawn.
     """
-    _validate_catalog(catalog)
+    validate_catalog(catalog)
     gals = None
     for row in catalog:
-        flux, fluxnorm_d, beta = row["flux"], row["fluxnorm_d"], row["beta"]
-        a_d, b_d, a_b, b_b = row["a_d"], row["b_d"], row["a_b"], row["b_b"]
-        galaxy = get_bulge_disk_galaxy(flux, fluxnorm_d, a_d, b_d, a_b, b_b, beta)
+        galaxy = get_gaussian_galaxy_from_catalog(row)
         gal_conv = galsim.Convolve(galaxy, psf)
         gal_conv = gal_conv.shift(row["ra"], row["dec"])
         if gals is None:
