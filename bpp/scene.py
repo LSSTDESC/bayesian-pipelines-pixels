@@ -29,7 +29,7 @@ def create_gaussian_cutouts(
         seed: To control randomness of noise added.
 
     Return:
-        Numpy array with all cutouts of shape (n x slen x slen) where n 
+        Numpy array with all cutouts of shape (n x slen x slen) where n
         is the number of rows in the catalog.
     """
     validate_catalog(catalog)
