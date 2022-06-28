@@ -1,4 +1,4 @@
-# bayesian-pipelines-pixels
+# Bayesian Pixel Pipeline
 
 Bayesian inference of lensing shear directly from pixels.
 
@@ -17,22 +17,38 @@ See the [Project Roadmap](https://github.com/LSSTDESC/bayesian-pipelines-pixels/
 
 ## Install
 
-1. First setup a virtual environment and activate it.
-
+1. Install [poetry](https://python-poetry.org/docs/), our package manager. Specifically for osx/linux:
     ```bash
-    python3 -m venv venv
-    source venv/bin/activate
+    curl -sSL https://install.python-poetry.org | python3 -
     ```
 
-2. Install `flit` (python package manager) with pip.
+2. Follow the instructions that appear after running the above installation command. In particular make sure that you add `poetry` installation to your `PATH`. You might need to restart your terminal.
 
+3. Git clone the repository
     ```bash
-    python3 -m pip install --upgrade pip # latest pip
-    python3 -m pip install flit
+    git clone https://github.com/LSSTDESC/bayesian-pipelines-pixels
     ```
 
-3. Install package (editable) and dependencies.
-
+4. Install the dependencies with poetry.
     ```bash
-    flit install -s --deps all
+    cd bayesian-pipelines-pixels
+    poetry install
     ```
+
+5. Launch virtual environment (anytime you work on the package)
+    ```bash
+    poetry shell
+    ```
+
+6. Package is now editable and importable within this virtual environment. Dependencies should be importable too.
+    ```python
+    import bpp
+    import galsim
+    ```
+
+7. Ensure everything works correctly by running the tests
+    ```bash
+    pytest
+    ```
+
+**Important Note:** If the `poetry.lock` file gets updated in a pull request, that means that the dependecies of the project were updated. You will need to run `poetry install` to use the latest version of dependencies. When in doubt, run `poetry install` whenever the `main` branch has a new commit.

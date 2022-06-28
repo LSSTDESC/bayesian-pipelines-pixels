@@ -1,5 +1,45 @@
 import galsim
 import numpy as np
+from astropy.table.row import Row
+
+
+def get_gaussian_galaxy(
+    flux: float, hlr: float, q: float, beta: float
+) -> galsim.GSObject:
+    """Returns a single Gaussian galaxy galsim object."""
+    beta_radians = beta * galsim.radians
+    circular_gal = galsim.Gaussian(flux=flux, half_light_radius=hlr)
+    return circular_gal.shear(q=q, beta=beta_radians)
+
+
+def get_gaussian_galaxy_from_catalog(row: Row) -> galsim.GSObject:
+    """Returns the corresponding gaussian galaxy for a given row in the catalog."""
+    # NOTE: We take the HLR to be one from the disk component in catalog.
+    flux = row["flux"].item()
+    hlr = np.sqrt(row["a_d"] * row["b_d"]).item()
+    q = row["b_d"].item() / row["a_d"].item()
+    beta = row["beta"].item()
+    return get_gaussian_galaxy(flux, hlr, q, beta)
+
+
+def get_sersic_galaxy(
+    n: float, flux: float, hlr: float, q: float, beta: float
+) -> galsim.GSObject:
+    """Returns a single Sersic galaxy galsim object."""
+    beta_radians = beta * galsim.radians
+    circular_gal = galsim.Sersic(n=n, flux=flux, half_light_radius=hlr)
+    return circular_gal.shear(q=q, beta=beta_radians)
+
+
+def get_sersic_galaxy_from_catalog(row: Row) -> galsim.GSObject:
+    """Returns the corresponding Sersic galaxy for a given row in the catalog."""
+    # NOTE: We take the HLR to be one from the disk component in catalog.
+    flux = row["flux"].item()
+    hlr = np.sqrt(row["a_d"] * row["b_d"]).item()
+    n = row["n"]
+    q = row["b_d"].item() / row["a_d"].item()
+    beta = row["beta"].item()
+    return get_sersic_galaxy(n, flux, hlr, q, beta)
 
 
 def get_bulge_disk_galaxy(
@@ -53,3 +93,12 @@ def get_bulge_disk_galaxy(
         components.append(bulge)
 
     return galsim.Add(components)
+
+
+def get_bulge_disk_galaxy_from_catalog(row: Row):
+    """Returns the corresponding Bulge+Disk galaxy for a given row in the catalog."""
+    flux, fluxnorm_d = row["flux"].item(), row["fluxnorm_d"].item()
+    a_d, a_b = row["a_d"].item(), row["a_b"].item()
+    b_b, b_d = row["b_b"].item(), row["b_d"].item()
+    beta = row["beta"].item()
+    return get_bulge_disk_galaxy(flux, fluxnorm_d, a_d, b_d, a_b, b_b, beta)

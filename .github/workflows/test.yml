@@ -18,37 +18,39 @@ jobs:
       - name: Checkout github repo
         uses: actions/checkout@v2
 
+      - name: Install poetry
+        run: pipx install poetry
+
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
+          cache: "poetry"
 
       - name: Install fftw3 (for galsim)
         run: |
           sudo apt-get install libfftw3-dev
 
-      - name: Install Package
+      - name: Install dependencies with poetry
         run: |
-          python3 -m pip install --upgrade pip
-          python3 -m pip install flit
-          flit install -s --deps all
+          poetry install
 
       - name: Run black
         run: |
-          black --check .
+          poetry run black --check .
 
       - name: Run flake8
         run: |
-          flake8 bpp/
+          poetry run flake8 bpp/
 
       - name: Run pylint
         run: |
-          pylint bpp/
+          poetry run pylint bpp/
 
       - name: Run isort
         run: |
-          isort bpp/ --check-only
+          poetry run isort bpp/ --check-only
 
       - name: Run Tests
         run: |
-          pytest --durations=0
+          poetry run pytest --durations=0

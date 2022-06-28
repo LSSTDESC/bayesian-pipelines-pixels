@@ -2,19 +2,11 @@ import galsim
 import numpy as np
 from astropy.table import Table
 
-from bpp.galaxy import get_bulge_disk_galaxy
+from bpp.catalog import validate_catalog
+from bpp.galaxy import get_gaussian_galaxy_from_catalog
 
 
-def _validate_catalog(catalog: Table):
-    """Ensure table is valid and has correct column names."""
-    required = {"flux", "fluxnorm_d", "a_d", "a_b", "b_b", "b_d", "beta", "ra", "dec"}
-    if not required.issubset(set(catalog.colnames)):
-        raise ValueError(f"Catalog does not have required columns: {required}")
-    if not len(catalog) > 0:
-        raise ValueError("Table has no row.")
-
-
-def create_scene(
+def create_gaussian_cutouts(
     slen: float,
     catalog: Table,
     psf: galsim.GSObject,
@@ -24,7 +16,7 @@ def create_scene(
     sky_level: float = 0,
     seed: int = 0,
 ) -> np.ndarray:
-    """Create a scene of galaxies as desired positions specified in `catalog`.
+    """Create cutouts of gaussian galaxies, one per row in catalog.
 
     Args:
         slen: Specify the side-length of the scene to produce.
@@ -37,22 +29,19 @@ def create_scene(
         seed: To control randomness of noise added.
 
     Return:
-        Numpy array containing an image with all galaxies of the catalog drawn.
+        Numpy array with all cutouts of shape (n x slen x slen) where n
+        is the number of rows in the catalog.
     """
-    _validate_catalog(catalog)
-    gals = None
-    for row in catalog:
-        flux, fluxnorm_d, beta = row["flux"], row["fluxnorm_d"], row["beta"]
-        a_d, b_d, a_b, b_b = row["a_d"], row["b_d"], row["a_b"], row["b_b"]
-        galaxy = get_bulge_disk_galaxy(flux, fluxnorm_d, a_d, b_d, a_b, b_b, beta)
+    validate_catalog(catalog)
+    cutouts = np.zeros((len(catalog), slen, slen))
+    for ii, row in enumerate(catalog):
+        galaxy = get_gaussian_galaxy_from_catalog(row)
         gal_conv = galsim.Convolve(galaxy, psf)
         gal_conv = gal_conv.shift(row["ra"], row["dec"])
-        if gals is None:
-            gals = gal_conv
-        gals += gal_conv
-    gals.shear(g1=g1, g2=g2)
-    image = gals.drawImage(nx=slen, ny=slen, scale=pixel_scale)
-    generator = galsim.random.BaseDeviate(seed=seed)
-    noise = galsim.GaussianNoise(rng=generator, sigma=sky_level)
-    image.addNoise(noise)
-    return image.array
+        gal_conv.shear(g1=g1, g2=g2)
+        image = gal_conv.drawImage(nx=slen, ny=slen, scale=pixel_scale, bandpass=None)
+        generator = galsim.random.BaseDeviate(seed=seed)
+        noise = galsim.GaussianNoise(rng=generator, sigma=sky_level)
+        image.addNoise(noise)
+        cutouts[ii, :, :] = image.array
+    return cutouts
