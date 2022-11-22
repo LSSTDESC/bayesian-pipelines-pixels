@@ -33,8 +33,8 @@ def create_gaussian_cutouts(
         is the number of rows in the catalog.
     """
     validate_catalog(catalog)
-    cutouts = np.zeros((len(catalog), slen, slen))
     n_rows = len(catalog["flux"])
+    cutouts = np.zeros((n_rows, slen, slen))
     for i in range(n_rows):
         row = {key: catalog[key][i] for key in catalog}
         gal = get_gaussian_galaxy_from_catalog(row)
@@ -42,8 +42,7 @@ def create_gaussian_cutouts(
         if g1 is not None and g2 is not None:
             gal = gal.shear(g1=g1, g2=g2)
         gal_conv = galsim.Convolve(gal, psf)
-        img = galsim.ImageF(slen, slen)
-        gal_conv.drawImage(image=img, scale=pixel_scale, bandpass=None)
+        img = gal_conv.drawImage(scale=pixel_scale, nx=slen, ny=slen, bandpass=None)
         rng = galsim.BaseDeviate(seed)
         noise = galsim.GaussianNoise(rng, sigma=sky_level)
         img.addNoise(noise)
