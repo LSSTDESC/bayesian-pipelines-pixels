@@ -19,8 +19,8 @@ readme = "README.md"
 version = "0.0.1"
 
 [tool.poetry.dependencies]
-astropy = ">=5.0.4"
-galsim = ">=2.3.4"
+galsim = ">=2.4.5"
+h5py = "^3.7.0"
 numpy = ">=1.22.0"
 python = ">=3.8,<4.0"
 
