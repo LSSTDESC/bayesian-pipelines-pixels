@@ -2,7 +2,17 @@ import os
 from typing import List, Optional
 
 import h5py
-from astropy.io.misc.hdf5 import read_table_hdf5, write_table_hdf5
+
+allowed_params = {
+    "catalog",
+    "image",
+    "psf_image",
+    "sky_level",
+    "pixel_scale",
+    "g1",
+    "g2",
+    "seed",
+}
 
 
 def write_data_to_hdf5_file(
@@ -20,25 +30,22 @@ def write_data_to_hdf5_file(
         compression: Compression to use.
         compression_opts: Compression level.
     """
+
+    assert set(data.keys()).issubset(allowed_params), "Invalid keys."
     if os.path.exists(filename) and not overwrite:
         raise ValueError(f"File {filename} exists and overwrite is False.")
+    h5_kwargs = {
+        "compression": compression,
+        "compression_opts": compression_opts,
+    }
     with h5py.File(filename, "w") as f:
-        for key, value in data.items():
-            if key == "catalog":
-                write_table_hdf5(
-                    value,
-                    f,
-                    path=key,
-                    compression=compression,
-                    compression_opts=compression_opts,
-                )
-            else:
-                f.create_dataset(
-                    key,
-                    data=value,
-                    compression=compression,
-                    compression_opts=compression_opts,
-                )
+        catalog_grp = f.create_group("catalog")
+        for key in data["catalog"].keys():
+            val = data["catalog"][key]
+            catalog_grp.create_dataset(key, data=val, **h5_kwargs)
+        for key in data.keys():
+            if key != "catalog":
+                f.create_dataset(key, data=data[key], **h5_kwargs)
 
 
 def load_data_from_hdf5_file(
@@ -52,8 +59,15 @@ def load_data_from_hdf5_file(
     Returns:
         Dictionary of data.
     """
+    if keys is None:
+        keys = allowed_params
+    data = {}
     with h5py.File(filename, "r") as f:
-        if keys is None:
-            keys = list(f.keys())
-        data = {key: f[key][()] for key in keys}
+        for key in keys:
+            if key == "catalog":
+                data[key] = {}
+                for k in f[key].keys():
+                    data[key][k] = f[key][k][:]
+            else:
+                data[key] = f[key][:]
     return data
