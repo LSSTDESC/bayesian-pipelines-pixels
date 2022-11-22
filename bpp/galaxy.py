@@ -1,6 +1,5 @@
 import galsim
 import numpy as np
-from astropy.table.row import Row
 
 
 def get_gaussian_galaxy(
@@ -12,7 +11,7 @@ def get_gaussian_galaxy(
     return circular_gal.shear(q=q, beta=beta_radians)
 
 
-def get_gaussian_galaxy_from_catalog(row: Row) -> galsim.GSObject:
+def get_gaussian_galaxy_from_catalog(row: dict) -> galsim.GSObject:
     """Returns the corresponding gaussian galaxy for a given row in the catalog."""
     # NOTE: We take the HLR to be one from the disk component in catalog.
     flux = row["flux"].item()
@@ -31,7 +30,7 @@ def get_sersic_galaxy(
     return circular_gal.shear(q=q, beta=beta_radians)
 
 
-def get_sersic_galaxy_from_catalog(row: Row) -> galsim.GSObject:
+def get_sersic_galaxy_from_catalog(row: dict) -> galsim.GSObject:
     """Returns the corresponding Sersic galaxy for a given row in the catalog."""
     # NOTE: We take the HLR to be one from the disk component in catalog.
     flux = row["flux"].item()
@@ -95,7 +94,7 @@ def get_bulge_disk_galaxy(
     return galsim.Add(components)
 
 
-def get_bulge_disk_galaxy_from_catalog(row: Row):
+def get_bulge_disk_galaxy_from_catalog(row: dict) -> galsim.GSObject:
     """Returns the corresponding Bulge+Disk galaxy for a given row in the catalog."""
     flux, fluxnorm_d = row["flux"].item(), row["fluxnorm_d"].item()
     a_d, a_b = row["a_d"].item(), row["a_b"].item()
