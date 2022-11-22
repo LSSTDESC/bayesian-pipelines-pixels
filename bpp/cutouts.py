@@ -1,6 +1,5 @@
 import galsim
 import numpy as np
-from astropy.table import Table
 
 from bpp.catalog import validate_catalog
 from bpp.galaxy import get_gaussian_galaxy_from_catalog
@@ -8,7 +7,7 @@ from bpp.galaxy import get_gaussian_galaxy_from_catalog
 
 def create_gaussian_cutouts(
     slen: float,
-    catalog: Table,
+    catalog: dict,
     psf: galsim.GSObject,
     pixel_scale: float = 0.2,
     g1: float = None,
@@ -20,7 +19,8 @@ def create_gaussian_cutouts(
 
     Args:
         slen: Specify the side-length of the scene to produce.
-        catalog: Astropy table with one entry per galaxy and its parameters.
+        catalog: Dictionary with numpy arrays corresponding to galaxy
+            parameters, each row corresponds to a single cutout.
         psf: Galsim object corresponding to PSF to use for convolving galaxies.
         g1: First reduced shear component to apply to all galaxies.
         g2: Second reduced shear component to apply to all galaxies.
@@ -29,19 +29,22 @@ def create_gaussian_cutouts(
         seed: To control randomness of noise added.
 
     Return:
-        Numpy array with all cutouts of shape (n x slen x slen) where n
+        Numpy array with all cutouts of shape `(n x slen x slen)` where `n`
         is the number of rows in the catalog.
     """
     validate_catalog(catalog)
-    cutouts = np.zeros((len(catalog), slen, slen))
-    for ii, row in enumerate(catalog):
-        galaxy = get_gaussian_galaxy_from_catalog(row)
-        gal_conv = galsim.Convolve(galaxy, psf)
-        gal_conv = gal_conv.shift(row["ra"], row["dec"])
-        gal_conv.shear(g1=g1, g2=g2)
-        image = gal_conv.drawImage(nx=slen, ny=slen, scale=pixel_scale, bandpass=None)
-        generator = galsim.random.BaseDeviate(seed=seed)
-        noise = galsim.GaussianNoise(rng=generator, sigma=sky_level)
-        image.addNoise(noise)
-        cutouts[ii, :, :] = image.array
+    n_rows = len(catalog["flux"])
+    cutouts = np.zeros((n_rows, slen, slen))
+    for i in range(n_rows):
+        row = {key: catalog[key][i] for key in catalog}
+        gal = get_gaussian_galaxy_from_catalog(row)
+        gal = gal.shift(row["ra"], row["dec"])
+        if g1 is not None and g2 is not None:
+            gal = gal.shear(g1=g1, g2=g2)
+        gal_conv = galsim.Convolve(gal, psf)
+        img = gal_conv.drawImage(scale=pixel_scale, nx=slen, ny=slen, bandpass=None)
+        rng = galsim.BaseDeviate(seed)
+        noise = galsim.GaussianNoise(rng, sigma=sky_level)
+        img.addNoise(noise)
+        cutouts[i, :, :] = img.array
     return cutouts

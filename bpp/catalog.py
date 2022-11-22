@@ -1,13 +1,15 @@
 import numpy as np
-from astropy.table import Table
 
 
-def validate_catalog(catalog: Table):
+def validate_catalog(catalog: dict):
     """Ensure table is valid and has correct column names."""
     required = {"flux", "fluxnorm_d", "a_d", "a_b", "b_b", "b_d", "beta", "ra", "dec"}
-    if not required.issubset(set(catalog.colnames)):
+    n_rows = len(catalog["flux"])
+    for key, value in catalog.items():
+        assert value.shape == (n_rows,), f"Column {key} has wrong shape."
+    if not required.issubset(set(catalog.keys())):
         raise ValueError(f"Catalog does not have required columns: {required}")
-    if not len(catalog) > 0:
+    if not n_rows > 0:
         raise ValueError("Catalog has no rows.")
 
 
@@ -30,7 +32,7 @@ def create_uniform_catalog(
             sersic indices sampled between 1 and 4.
 
     Returns:
-        Astropy table with rows corresponding to a single galaxy.
+        A dictionary containing the catalog.
     """
     assert n_sersic_bins <= 100, "See Galsim documentation on Sersics."
     assert max_shift / 0.2 <= 5, "Limit to single uncentered galaxies on a cutout."
@@ -49,4 +51,4 @@ def create_uniform_catalog(
     dec = np.random.uniform(-max_shift, max_shift, size=n_rows)
     data = [flux, fluxnorm_d, beta, a_d, a_b, b_d, b_b, n, ra, dec]
     names = ["flux", "fluxnorm_d", "beta", "a_d", "a_b", "b_d", "b_b", "n", "ra", "dec"]
-    return Table(data=data, names=names)
+    return dict(zip(names, data))
