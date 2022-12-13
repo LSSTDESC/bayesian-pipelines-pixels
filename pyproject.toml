@@ -23,6 +23,7 @@ galsim = ">=2.4.5"
 h5py = "^3.7.0"
 numpy = ">=1.22.0"
 python = ">=3.8,<4.0"
+galcheat = "^1.0.0"
 
 [tool.poetry.dev-dependencies]
 black = ">=22.3.0"

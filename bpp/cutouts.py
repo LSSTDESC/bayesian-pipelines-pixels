@@ -26,12 +26,14 @@ def create_gaussian_cutouts(
         g2: Second reduced shear component to apply to all galaxies.
         background: Background value to use.
         pixel_scale: Pixel scale to use [pixels / arcsecond]
+        sky_level: background sky level in counts.
         seed: To control randomness of noise added.
 
     Return:
         Numpy array with all cutouts of shape `(n x slen x slen)` where `n`
         is the number of rows in the catalog.
     """
+    np.random.seed(seed)
     validate_catalog(catalog)
     n_rows = len(catalog["flux"])
     cutouts = np.zeros((n_rows, slen, slen))
@@ -43,8 +45,7 @@ def create_gaussian_cutouts(
             gal = gal.shear(g1=g1, g2=g2)
         gal_conv = galsim.Convolve(gal, psf)
         img = gal_conv.drawImage(scale=pixel_scale, nx=slen, ny=slen, bandpass=None)
-        rng = galsim.BaseDeviate(seed)
-        noise = galsim.GaussianNoise(rng, sigma=sky_level)
-        img.addNoise(noise)
-        cutouts[i, :, :] = img.array
+        img = img.array + sky_level
+        img += np.random.randn(*img.shape) * np.sqrt(img)
+        cutouts[i, :, :] = img
     return cutouts
