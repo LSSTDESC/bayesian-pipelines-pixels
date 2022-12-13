@@ -33,6 +33,7 @@ def create_gaussian_cutouts(
         Numpy array with all cutouts of shape `(n x slen x slen)` where `n`
         is the number of rows in the catalog.
     """
+    np.random.seed(seed)
     validate_catalog(catalog)
     n_rows = len(catalog["flux"])
     cutouts = np.zeros((n_rows, slen, slen))
@@ -44,8 +45,7 @@ def create_gaussian_cutouts(
             gal = gal.shear(g1=g1, g2=g2)
         gal_conv = galsim.Convolve(gal, psf)
         img = gal_conv.drawImage(scale=pixel_scale, nx=slen, ny=slen, bandpass=None)
-        rng = galsim.BaseDeviate(seed)
-        noise = galsim.GaussianNoise(rng, sigma=sky_level)
-        img.addNoise(noise)
-        cutouts[i, :, :] = img.array
+        img = img.array + sky_level
+        img += np.random.randn(*img.shape) * np.sqrt(img)
+        cutouts[i, :, :] = img
     return cutouts
