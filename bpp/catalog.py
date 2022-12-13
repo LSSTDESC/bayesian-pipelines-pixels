@@ -26,10 +26,12 @@ def create_uniform_catalog(
     Args:
         n_rows: How many rows in the catalog?
         max_shift: Maximum ra,dec shift in arcseconds.
-        min_a: Minimum semi-major axis for both bulge and disk component.
-        max_a: Maximum semi-major axis for both bulge and disk component.
-        n_sersic_bins: Number of bins up to 100 that represent number of possible
-            sersic indices sampled between 1 and 4.
+        min_a: Minimum semi-major axis for both bulge and disk component, in
+            arcseconds.
+        max_a: Maximum semi-major axis for both bulge and disk component, in
+            arcseconds.
+        n_sersic_bins: Number of bins up to 100 that represent number of
+            possible sersic indices sampled between 1 and 4.
 
     Returns:
         A dictionary containing the catalog.

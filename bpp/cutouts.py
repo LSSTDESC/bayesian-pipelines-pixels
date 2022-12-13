@@ -26,6 +26,7 @@ def create_gaussian_cutouts(
         g2: Second reduced shear component to apply to all galaxies.
         background: Background value to use.
         pixel_scale: Pixel scale to use [pixels / arcsecond]
+        sky_level: background sky level in counts.
         seed: To control randomness of noise added.
 
     Return:
