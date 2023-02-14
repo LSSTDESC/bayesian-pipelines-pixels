@@ -41,7 +41,7 @@ naming scheme in this script,
 import jax.numpy as jnp
 
 
-def unshear(e, g):
+def unshear(e, g, weak_shear=True):
     """Unshear complex ellipticity e given complex reduced shear g
 
     Args:
@@ -51,7 +51,11 @@ def unshear(e, g):
     Returns:
         e_int (complex): unsheared ellipticity
     """
-    pass
+    d = e - g
+    if weak_shear:
+        return d
+    else: # do not assume weak shear
+        return d / (1.0 - e * g.conj()) # Bartelmann & Schneider (4.12)
 
 
 def prior_gaussian_shear(lens_dist):
@@ -59,14 +63,14 @@ def prior_gaussian_shear(lens_dist):
 
     This is a function of lens_dist through sigma_g. 
     Returns P(g1, g2 | sigma_g) as a Gaussian.
-
-    Args:
-        lens_dist (list): Hyperparameters for the shear distribution
     """
-    pass
+    sigma_g_sq = lens_dist[0]**2
+    lognorm = jnp.log(2*jnp.pi*sigma_g_sq)
+    def shear_prior(g1,g2):
+        return -0.5 * (g1**2 + g2**2) / sigma_g_sq - lognorm
+    return shear_prior
 
-
-def prior_gaussian_ellipticity(lens_params, gal_dist):
+def prior_gaussian_ellipticity(gal_dist):
     """A Gaussian functional form for the final prior over e1,e2
 
     This is a function of gal_dist through sigma_e.
@@ -76,15 +80,17 @@ def prior_gaussian_ellipticity(lens_params, gal_dist):
         gal_dist (list): Hyperparameters for the intrinsic galaxy image 
             properties
     """
-    sigma_e_sq = gal_dist[0]
-    g1 = lens_params[0]
-    g2 = lens_params[1]
-    e_int = unshear(e, g)
-    abs_e = abs(e_int)
-    return -0.5 * (abs_e**2 / sigma_e_sq) - lognorm
+    sigma_e_sq = gal_dist[0]**2
+    lognorm = jnp.log(2.0*jnp.pi * sigma_e_sq)
+    def ellipticity_prior(gal_params, lens_params):
+        g = lens_params[0] + 1j*lens_params[1]
+        e = gal_params[0] + 1j*gal_params[1]
+        e_int = unshear(e, g)
+        return -0.5 * (e_int*e_int.conj() / sigma_e_sq) - lognorm
+    return ellipticity_prior
 
 
-def ln_likelihood(gal_params, lens_params, prior_forms):
+def ln_likelihood(gal_params, gal_dist, prior_forms, interim_priors):
     """
     Evaluate the natural logarithm of the likelihood of galaxy images given 
     lensing shear parameters
@@ -94,14 +100,17 @@ def ln_likelihood(gal_params, lens_params, prior_forms):
     simulation.
 
     Args:
-        samples: Array of posterior samples for galaxy image model parameters.
-        lens_params: List of shear parameters (g1, g2, kappa, ln_sigma_e).
-        prior_forms: List of functionals of hyperparameters `lens_params` 
+        gal_params: Array of posterior samples for galaxy image model parameters.
+        gal_dist: List of galaxy distribution hyperparameters (sigma_e).
+        prior_forms: List of functionals of hyperparameters `gal_dist` 
             which each yield a probability density function of galaxy 
-            parameters.
+            parameters (e1, e2).
+        interim_priors: Array of interim prior values for each of the input 
+            posterior samples (i.e., what prior was used for the galaxy image
+            parameters in the previous processing step?)
     """
     # Construct prior functions for given shear parameters
-    priors = [p(lens_params) for p in prior_forms]
+    priors = [p(gal_dist) for p in prior_forms]
     # Evaluate the shear-dependent priors on the galaxy image parameter samples
     # This is: Pr(e_obs_1, e_obs_2 | g1, g2, sigma_e)
     probs = [p(gal_params) for p in priors]
@@ -109,7 +118,7 @@ def ln_likelihood(gal_params, lens_params, prior_forms):
     # evaluate the marginal likelihood for that galaxy. 
     # Use `mean` instead of `sum` to keep the numerical value smaller - we 
     # never care about the absolute normalization anyway.
-    wts = jnp.mean(probs / interim_prior, axis=1)
+    wts = jnp.mean(probs / interim_priors, axis=1)
     # The marginal likelihood for all galaxies is the product of marginal
     # likelihoods for each individual galaxy (or the sum of the 
     # log-likelihoods)
