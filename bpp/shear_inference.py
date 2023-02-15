@@ -90,7 +90,7 @@ def prior_gaussian_ellipticity(gal_dist):
     return ellipticity_prior
 
 
-def ln_likelihood(gal_params, gal_dist, prior_forms, interim_priors):
+def ln_likelihood(gal_params,lens_params, gal_dist, prior_forms, interim_priors):
     """
     Evaluate the natural logarithm of the likelihood of galaxy images given 
     lensing shear parameters
@@ -113,7 +113,7 @@ def ln_likelihood(gal_params, gal_dist, prior_forms, interim_priors):
     priors = [p(gal_dist) for p in prior_forms]
     # Evaluate the shear-dependent priors on the galaxy image parameter samples
     # This is: Pr(e_obs_1, e_obs_2 | g1, g2, sigma_e)
-    probs = [p(gal_params) for p in priors]
+    probs = [p(gal_params, lens_params) for p in priors]
     # Sum importance sampling weights for each sample for a given galaxy to
     # evaluate the marginal likelihood for that galaxy. 
     # Use `mean` instead of `sum` to keep the numerical value smaller - we 
@@ -126,7 +126,27 @@ def ln_likelihood(gal_params, gal_dist, prior_forms, interim_priors):
     return out
 
 
+def ln_shear_posterior(gal_params, lens_params, gal_dist, lens_dist, prior_forms, interim_priors):
+    """
+    Evaluate the natural logarithm of the marginal posterior on shear parameters
+    """
+    lnlike = ln_likelihood(gal_params, lens_params, gal_dist, prior_forms, interim_priors)
+    lnprior = jnp.log(prior_gaussian_shear(lens_dist)(lens_params))
+    return lnlike + lnprior
+
+
+def sample_posterior():
+    """
+    Run MCMC to generate samples from the shear posterior
+    """
+    pass
+
 def main():
+    # Load input samples
+
+    # Sample from the shear posterior
+
+    # Save output shear samples
     pass
 
 
